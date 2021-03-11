@@ -1,0 +1,55 @@
+# This is a single-node, developer setup
+# For production clusters, use the SingleStore Kubernetes Operator
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: singlestore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: singlestore
+  template:
+    metadata:
+      labels:
+        app: singlestore
+    spec:
+      containers:
+      - name: singlestore
+        resources:
+        image: memsql/cluster-in-a-box
+        ports:
+        - containerPort: 3306 # SingleStore db
+        - containerPort: 8080 # SingleStore Studio
+        env:
+        # 'Y' means keep running after cluster init
+        - name: START_AFTER_INIT
+          value: 'Y'
+        # TODO: set to your desired password
+        - name: ROOT_PASSWORD
+          value: 'password_here'
+        # TODO: paste your license key from portal.singlestore.com here:
+        - name: LICENSE_KEY
+          value: PASTE_YOUR_LICENSE_KEY_HERE
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: singlestore
+  labels:
+    app: singlestore
+spec:
+  type: NodePort
+  selector:
+    app: singlestore
+  ports:
+  # SingleStore db port:
+  - name: '3306'
+    nodePort: 30306
+    port: 3306
+    targetPort: 3306
+  # SingleStore Studio port:
+  - name: '8080'
+    nodePort: 30080
+    port: 8080
+    targetPort: 8080

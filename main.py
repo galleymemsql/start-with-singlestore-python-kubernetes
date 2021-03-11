@@ -7,7 +7,7 @@ def main():
 
   # TODO: pull from config
   HOST = 'localhost'
-  PORT = 3306
+  PORT = 30306
   USER = 'root'
   PASSWORD = 'password_here'
   DATABASE = 'acme'
